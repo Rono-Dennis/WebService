@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/authenticate/**
+        - id: movie-service
+          uri: lb://MOVIE-SERVICE
+          predicates:
+            - Path=/authenticate/**
+        - id: movie-services
+          uri: lb://MOVIE-SERVICEs
+          predicates:
+            - Path=/authenticate/**
+
+
+#          filters:
+#            - name: CircuitBreaker
+#              args:
+#                name: auth-service
+#                fallbackuri: forward:/authFallBack
+#                                                    - id: movie-service
+#                                                      uri: lb://MOVIE-SERVICE
+#                                                      predicates:
+#                                                        - Path=/movies/**
+#          filters:
+#            - name: CircuitBreaker
+#              args:
+#                name: movies-service
+#                fallbackuri: forward:/moviesFallback
+                
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+server:
+  port: 9395
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+
+hystrix:
+  command:
+    fallbackcmd:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000  
